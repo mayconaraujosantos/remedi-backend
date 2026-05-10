@@ -1,0 +1,59 @@
+{
+  "compilerOptions": {
+    // === File Layout ===
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    // === Environment Settings - PARA DESENVOLVIMENTO COM TSX ===
+    "module": "esnext", // Mudado: melhor para tsx
+    "moduleResolution": "bundler", // Mudado: não precisa de extensões .js
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "types": ["node"],
+
+    "baseUrl": ".",
+    // === Path Mapping (Opcional) ===
+    "paths": {
+      // ← Adicione isso
+      "@/*": ["./src/*"]
+    },
+
+    // === Outputs ===
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    // === Stricter Typechecking ===
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": false, // Mudado: desabilitado para evitar erros
+
+    // === Decorators (ESSENCIAL para tsyringe) ===
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    // === Module Resolution ===
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
+    // === Recomendados ===
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": false,
+
+    // === Adicionais ===
+    "removeComments": false,
+    "noEmitOnError": false,
+
+    // === Performance ===
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo"
+  },
+
+  "include": ["src/**/*.ts", "src/**/*.json"],
+
+  "exclude": ["node_modules", "dist", "coverage"]
+}
+
