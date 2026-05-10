@@ -4,63 +4,63 @@ import { config } from '@/main/config/config.js'
 
 const queryClient = postgres(config.database.url!)
 
-// Executar o DDL inicial (Migrações manuais)
+// Executar o DDL inicial (Migrações manuais em snake_case)
 await queryClient`
-  CREATE TABLE IF NOT EXISTS Medication (
+  CREATE TABLE IF NOT EXISTS medication (
     id VARCHAR(255) PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT,
     dosage TEXT NOT NULL,
     frequency TEXT NOT NULL,
-    startDate TIMESTAMP NOT NULL,
-    endDate TIMESTAMP,
-    nextDoseAt TIMESTAMP NOT NULL,
-    categoryId VARCHAR(255),
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP,
+    next_dose_at TIMESTAMP NOT NULL,
+    category_id VARCHAR(255),
     active BOOLEAN NOT NULL DEFAULT TRUE,
-    createdAt TIMESTAMP NOT NULL DEFAULT NOW()
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
   )
 `
 
 await queryClient`
-  CREATE TABLE IF NOT EXISTS Reminder (
+  CREATE TABLE IF NOT EXISTS reminder (
     id VARCHAR(255) PRIMARY KEY,
     title TEXT NOT NULL,
     description TEXT,
-    dueDate TIMESTAMP NOT NULL,
-    createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
+    due_date TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     completed BOOLEAN NOT NULL DEFAULT FALSE
   )
 `
 
 await queryClient`
-  CREATE TABLE IF NOT EXISTS Category (
+  CREATE TABLE IF NOT EXISTS category (
     id VARCHAR(255) PRIMARY KEY,
     name TEXT NOT NULL,
     color TEXT,
-    createdAt TIMESTAMP NOT NULL DEFAULT NOW()
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
   )
 `
 
 await queryClient`
-  CREATE TABLE IF NOT EXISTS MedicationSchedule (
+  CREATE TABLE IF NOT EXISTS medicationschedule (
     id VARCHAR(255) PRIMARY KEY,
-    medicationId VARCHAR(255) NOT NULL,
+    medication_id VARCHAR(255) NOT NULL,
     type TEXT NOT NULL,
-    intervalHours INTEGER,
-    daysOfWeek INTEGER[],
+    interval_hours INTEGER,
+    days_of_week INTEGER[],
     times TEXT[] NOT NULL,
-    startDate TIMESTAMP NOT NULL,
-    endDate TIMESTAMP
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP
   )
 `
 
 await queryClient`
-  CREATE TABLE IF NOT EXISTS DoseEvent (
+  CREATE TABLE IF NOT EXISTS doseevent (
     id VARCHAR(255) PRIMARY KEY,
-    medicationId VARCHAR(255) NOT NULL,
-    scheduledAt TIMESTAMP NOT NULL,
-    takenAt TIMESTAMP,
-    skippedAt TIMESTAMP,
+    medication_id VARCHAR(255) NOT NULL,
+    scheduled_at TIMESTAMP NOT NULL,
+    taken_at TIMESTAMP,
+    skipped_at TIMESTAMP,
     status TEXT NOT NULL DEFAULT 'PENDING'
   )
 `

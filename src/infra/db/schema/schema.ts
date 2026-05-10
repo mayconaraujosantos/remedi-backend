@@ -1,52 +1,52 @@
 import { pgTable, text, integer, timestamp, varchar, boolean } from 'drizzle-orm/pg-core'
 
-export const medications = pgTable('Medication', {
+export const medications = pgTable('medication', {
   id: varchar('id', { length: 255 }).primaryKey(),
   name: text('name').notNull(),
   description: text('description'),
   dosage: text('dosage').notNull(),
   frequency: text('frequency').notNull(), // 'once', 'daily', etc
-  startDate: timestamp('startDate').notNull(),
-  endDate: timestamp('endDate'),
-  nextDoseAt: timestamp('nextDoseAt').notNull(),
-  categoryId: varchar('categoryId', { length: 255 }),
+  startDate: timestamp('start_date').notNull(),
+  endDate: timestamp('end_date'),
+  nextDoseAt: timestamp('next_dose_at').notNull(),
+  categoryId: varchar('category_id', { length: 255 }),
   active: boolean('active').notNull().default(true),
-  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
-export const categories = pgTable('Category', {
+export const categories = pgTable('category', {
   id: varchar('id', { length: 255 }).primaryKey(),
   name: text('name').notNull(),
   color: text('color'),
-  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
-export const reminders = pgTable('Reminder', {
+export const reminders = pgTable('reminder', {
   id: varchar('id', { length: 255 }).primaryKey(),
   title: text('title').notNull(),
   description: text('description'),
-  dueDate: timestamp('dueDate').notNull(),
-  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  dueDate: timestamp('due_date').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
   completed: boolean('completed').notNull().default(false),
 })
 
-export const medicationSchedules = pgTable('MedicationSchedule', {
+export const medicationSchedules = pgTable('medicationschedule', {
   id: varchar('id', { length: 255 }).primaryKey(),
-  medicationId: varchar('medicationId', { length: 255 }).notNull(),
+  medicationId: varchar('medication_id', { length: 255 }).notNull(),
   type: text('type').notNull(), // 'ONCE', 'DAILY', 'WEEKLY', 'INTERVAL'
-  intervalHours: integer('intervalHours'),
-  daysOfWeek: integer('daysOfWeek').array(),
+  intervalHours: integer('interval_hours'),
+  daysOfWeek: integer('days_of_week').array(),
   times: text('times').array().notNull(),
-  startDate: timestamp('startDate').notNull(),
-  endDate: timestamp('endDate'),
+  startDate: timestamp('start_date').notNull(),
+  endDate: timestamp('end_date'),
 })
 
-export const doseEvents = pgTable('DoseEvent', {
+export const doseEvents = pgTable('doseevent', {
   id: varchar('id', { length: 255 }).primaryKey(),
-  medicationId: varchar('medicationId', { length: 255 }).notNull(),
-  scheduledAt: timestamp('scheduledAt').notNull(),
-  takenAt: timestamp('takenAt'),
-  skippedAt: timestamp('skippedAt'),
+  medicationId: varchar('medication_id', { length: 255 }).notNull(),
+  scheduledAt: timestamp('scheduled_at').notNull(),
+  takenAt: timestamp('taken_at'),
+  skippedAt: timestamp('skipped_at'),
   status: text('status').notNull().default('PENDING'),
 })
 
