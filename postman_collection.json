@@ -1,0 +1,217 @@
+{
+	"info": {
+		"_postman_id": "7665780d-8521-4874-a748-038c8f85f1c2",
+		"name": "Reminder API",
+		"description": "Collection to test the Medication and Reminder system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "List Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Antibióticos\",\n    \"color\": \"#FF5733\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Medications",
+			"item": [
+				{
+					"name": "List Medications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/medications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"medications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Medication",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Amoxicilina\",\n    \"description\": \"Tomar após as refeições\",\n    \"dosage\": \"500mg\",\n    \"frequency\": \"DAILY\",\n    \"startDate\": \"2024-05-10T08:00:00Z\",\n    \"schedule\": {\n        \"type\": \"INTERVAL\",\n        \"intervalHours\": 8,\n        \"times\": [\"08:00\", \"16:00\", \"00:00\"]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/medications",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"medications"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Adherence (Doses)",
+			"item": [
+				{
+					"name": "Mark Dose as Taken",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/medications/doses/:id/take",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"medications",
+								"doses",
+								":id",
+								"take"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "dose-id-here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Ad-hoc Dose",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/medications/:id/doses/ad-hoc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"medications",
+								":id",
+								"doses",
+								"ad-hoc"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "medication-id-here"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Medication Doses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/medications/:id/doses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"medications",
+								":id",
+								"doses"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "med-id-here"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+
+
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3333",
+			"type": "string"
+		}
+	]
+}
