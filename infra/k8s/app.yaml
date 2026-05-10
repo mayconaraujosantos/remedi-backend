@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reminder-api
+  labels:
+    app: reminder-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reminder-api
+  template:
+    metadata:
+      labels:
+        app: reminder-api
+    spec:
+      containers:
+      - name: reminder-api
+        image: reminder-api:latest  # Deve ser buildada localmente ou em registry
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3333
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://postgres:postgres@postgres:5432/reminder_db"
+        - name: REDIS_HOST
+          value: "redis"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://otel-collector:4318/"
+        - name: OTEL_SERVICE_NAME
+          value: "reminder-api"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reminder-api
+spec:
+  selector:
+    app: reminder-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3333
+  type: ClusterIP
