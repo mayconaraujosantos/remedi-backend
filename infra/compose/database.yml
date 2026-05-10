@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=reminder_db
+    ports:
+      - "5432:5432"
+    networks:
+      - reminder_network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - reminder_network
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+
+networks:
+  reminder_network:
+    name: reminder_network
+    driver: bridge
+
