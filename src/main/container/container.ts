@@ -37,7 +37,10 @@ import { DoseController } from '@/infra/http/controllers/DoseController'
 container.registerSingleton('ReminderRepository', ReminderRepositoryDrizzle)
 container.registerSingleton('MedicationRepository', MedicationRepositoryDrizzle)
 container.registerSingleton('CategoryRepository', CategoryRepositoryDrizzle)
-container.registerSingleton('MedicationScheduleRepository', MedicationScheduleRepositoryDrizzle)
+container.registerSingleton(
+  'MedicationScheduleRepository',
+  MedicationScheduleRepositoryDrizzle
+)
 container.registerSingleton('DoseEventRepository', DoseEventRepositoryDrizzle)
 container.registerSingleton('QueueProvider', BullMQQueueProvider)
 

@@ -12,20 +12,20 @@ export type MedicationFrequency =
 export interface MedicationProps {
   id?: string
   name: string
-  description?: string | undefined
+  description?: string
   dosage: Dosage
-  categoryId?: string | undefined
-  active?: boolean | undefined
+  categoryId?: string
+  active?: boolean
   createdAt: Date
 }
 
 export class Medication {
   public readonly id: string
   public readonly name: string
-  public readonly description?: string | undefined
+  public readonly description?: string
   public readonly dosage: Dosage
   public active: boolean
-  public readonly categoryId?: string | undefined
+  public readonly categoryId?: string
   public readonly createdAt: Date
 
   constructor(props: MedicationProps) {

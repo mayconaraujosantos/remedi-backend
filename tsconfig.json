@@ -10,6 +10,7 @@
     "target": "ES2022",
     "lib": ["ES2022"],
     "types": ["node"],
+    "ignoreDeprecations": "6.0",
 
     "baseUrl": ".",
     // === Path Mapping (Opcional) ===

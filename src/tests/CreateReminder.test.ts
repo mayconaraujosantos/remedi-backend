@@ -1,8 +1,7 @@
 import 'reflect-metadata'
 import { describe, it, expect, beforeEach } from 'vitest'
-import {CreateReminder} from "../application/usecases/CreateReminder";
-import {ReminderRepositoryDrizzle} from "../infra/db/repositories/ReminderRepositoryDrizzle";
-
+import { CreateReminder } from '../application/usecases/CreateReminder'
+import { ReminderRepositoryDrizzle } from '../infra/db/repositories/ReminderRepositoryDrizzle'
 
 describe('CreateReminder', () => {
   let createReminder: CreateReminder

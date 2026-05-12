@@ -17,6 +17,5 @@ export class DeleteMedication {
 
     existing.markInactive()
     await this.medicationRepository.update(existing)
-
   }
 }

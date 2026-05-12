@@ -41,7 +41,7 @@ describe('GenerateDoseEvents', () => {
       medicationRepository,
       queueProvider
     )
-    
+
     // Fixando o "hoje" para os testes serem determinísticos
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2024-05-10T10:00:00Z'))
@@ -57,7 +57,7 @@ describe('GenerateDoseEvents', () => {
     })
 
     // Agora é 10:00. Janela de 1 dia vai até amanhã 10:00.
-    // Doses esperadas: 
+    // Doses esperadas:
     // Hoje 08:00 (dentro da janela de geração, mesmo que já tenha passado do "agora")
     // Hoje 20:00
     // Amanhã 08:00
@@ -85,10 +85,9 @@ describe('GenerateDoseEvents', () => {
     expect(queueProvider.addJob).toHaveBeenCalled()
   })
 
-
   it('should not generate doses if medication is not found (Stub test)', async () => {
     // Mudando o comportamento do Stub para este teste
-    (medicationRepository.findById as any).mockResolvedValue(null)
+    ;(medicationRepository.findById as any).mockResolvedValue(null)
 
     const schedule = new MedicationSchedule({
       id: 'sched-1',

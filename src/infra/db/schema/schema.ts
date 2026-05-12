@@ -1,4 +1,11 @@
-import { pgTable, text, integer, timestamp, varchar, boolean } from 'drizzle-orm/pg-core'
+import {
+  pgTable,
+  text,
+  integer,
+  timestamp,
+  varchar,
+  boolean,
+} from 'drizzle-orm/pg-core'
 
 export const medications = pgTable('medication', {
   id: varchar('id', { length: 255 }).primaryKey(),

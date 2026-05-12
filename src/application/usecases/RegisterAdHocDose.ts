@@ -16,7 +16,7 @@ export class RegisterAdHocDose {
 
   async execute(medicationId: string): Promise<DoseEvent> {
     const medication = await this.medicationRepository.findById(medicationId)
-    
+
     if (!medication) {
       throw new AppError('Medication not found', 404)
     }
@@ -35,7 +35,6 @@ export class RegisterAdHocDose {
 
     await this.doseEventRepository.create(dose)
     trackDoseTaken('adhoc')
-
 
     return dose
   }

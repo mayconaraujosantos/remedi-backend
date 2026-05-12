@@ -1,5 +1,11 @@
 import { db } from './database'
-import { categories, medications, reminders, medicationSchedules, doseEvents } from './schema/schema'
+import {
+  categories,
+  medications,
+  reminders,
+  medicationSchedules,
+  doseEvents,
+} from './schema/schema'
 import { logger } from '@/shared/utils/logger'
 
 async function seed() {
@@ -14,59 +20,68 @@ async function seed() {
     await db.delete(categories)
 
     // 2. Inserir Categorias
-    const categoryList = await db.insert(categories).values([
-      { id: 'cat-1', name: 'Antibióticos', color: '#FF5733' },
-      { id: 'cat-2', name: 'Suplementos', color: '#33FF57' },
-      { id: 'cat-3', name: 'Uso Contínuo', color: '#3357FF' },
-    ]).returning()
+    const categoryList = await db
+      .insert(categories)
+      .values([
+        { id: 'cat-1', name: 'Antibióticos', color: '#FF5733' },
+        { id: 'cat-2', name: 'Suplementos', color: '#33FF57' },
+        { id: 'cat-3', name: 'Uso Contínuo', color: '#3357FF' },
+      ])
+      .returning()
 
     logger.info(`✅ ${categoryList.length} categories inserted`)
 
     // 3. Inserir Medicamentos
-    const medicationList = await db.insert(medications).values([
-      {
-        id: 'med-1',
-        name: 'Amoxicilina',
-        description: 'Tomar após as refeições',
-        dosage: '500mg',
-        frequency: 'DAILY',
-        startDate: new Date(),
-        nextDoseAt: new Date(Date.now() + 8 * 60 * 60 * 1000),
-        categoryId: 'cat-1',
-        active: true,
-      },
-      {
-        id: 'med-2',
-        name: 'Vitamina C',
-        description: 'Efervescente',
-        dosage: '1g',
-        frequency: 'DAILY',
-        startDate: new Date(),
-        nextDoseAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        categoryId: 'cat-2',
-        active: true,
-      },
-    ]).returning()
+    const medicationList = await db
+      .insert(medications)
+      .values([
+        {
+          id: 'med-1',
+          name: 'Amoxicilina',
+          description: 'Tomar após as refeições',
+          dosage: '500mg',
+          frequency: 'DAILY',
+          startDate: new Date(),
+          nextDoseAt: new Date(Date.now() + 8 * 60 * 60 * 1000),
+          categoryId: 'cat-1',
+          active: true,
+        },
+        {
+          id: 'med-2',
+          name: 'Vitamina C',
+          description: 'Efervescente',
+          dosage: '1g',
+          frequency: 'DAILY',
+          startDate: new Date(),
+          nextDoseAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          categoryId: 'cat-2',
+          active: true,
+        },
+      ])
+      .returning()
 
     logger.info(`✅ ${medicationList.length} medications inserted`)
 
     // 4. Inserir Lembretes
-    const reminderList = await db.insert(reminders).values([
-      {
-        id: 'rem-1',
-        title: 'Beber Água',
-        description: 'Meta de 2L por dia',
-        dueDate: new Date(Date.now() + 2 * 60 * 60 * 1000),
-        completed: false,
-      },
-      {
-        id: 'rem-2',
-        title: 'Ligar para o Médico',
-        description: 'Marcar retorno',
-        dueDate: new Date(Date.now() + 48 * 60 * 60 * 1000),
-        completed: false,
-      },
-    ]).returning()
+    const reminderList = await db
+      .insert(reminders)
+      .values([
+        {
+          id: 'rem-1',
+          title: 'Beber Água',
+          description: 'Meta de 2L por dia',
+          dueDate: new Date(Date.now() + 2 * 60 * 60 * 1000),
+          completed: false,
+        },
+        {
+          id: 'rem-2',
+          title: 'Ligar para o Médico',
+          description: 'Marcar retorno',
+          dueDate: new Date(Date.now() + 48 * 60 * 60 * 1000),
+          completed: false,
+        },
+      ])
+      .returning()
 
     logger.info(`✅ ${reminderList.length} reminders inserted`)
 

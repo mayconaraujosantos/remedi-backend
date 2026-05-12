@@ -23,7 +23,6 @@ export class DoseService {
     return this.registerAdHocDoseUseCase.execute(medicationId)
   }
 
-
   async markAsTaken(doseId: string): Promise<void> {
     return this.markAsTakenUseCase.execute(doseId)
   }
@@ -32,7 +31,15 @@ export class DoseService {
     return this.markAsSkippedUseCase.execute(doseId)
   }
 
-  async listByMedication(medicationId: string, startDate?: Date, endDate?: Date): Promise<DoseEventResponseDTO[]> {
-    return this.listMedicationDosesUseCase.execute(medicationId, startDate, endDate)
+  async listByMedication(
+    medicationId: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<DoseEventResponseDTO[]> {
+    return this.listMedicationDosesUseCase.execute(
+      medicationId,
+      startDate,
+      endDate
+    )
   }
 }

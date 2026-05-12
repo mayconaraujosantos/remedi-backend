@@ -15,7 +15,8 @@ export class MedicationScheduleRepositoryDrizzle implements MedicationScheduleRe
 
   async update(schedule: MedicationSchedule): Promise<void> {
     const data = MedicationScheduleMapper.toPersistence(schedule)
-    await db.update(medicationSchedules)
+    await db
+      .update(medicationSchedules)
       .set(data)
       .where(eq(medicationSchedules.id, schedule.id))
   }
@@ -25,7 +26,8 @@ export class MedicationScheduleRepositoryDrizzle implements MedicationScheduleRe
   }
 
   async findById(id: string): Promise<MedicationSchedule | null> {
-    const [data] = await db.select()
+    const [data] = await db
+      .select()
       .from(medicationSchedules)
       .where(eq(medicationSchedules.id, id))
       .limit(1)
@@ -33,8 +35,11 @@ export class MedicationScheduleRepositoryDrizzle implements MedicationScheduleRe
     return data ? MedicationScheduleMapper.toDomain(data) : null
   }
 
-  async findByMedicationId(medicationId: string): Promise<MedicationSchedule | null> {
-    const [data] = await db.select()
+  async findByMedicationId(
+    medicationId: string
+  ): Promise<MedicationSchedule | null> {
+    const [data] = await db
+      .select()
       .from(medicationSchedules)
       .where(eq(medicationSchedules.medicationId, medicationId))
       .limit(1)

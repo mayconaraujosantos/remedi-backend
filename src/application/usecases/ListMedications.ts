@@ -21,7 +21,6 @@ export class ListMedications {
       ...filters,
     })
 
-
     return medications.map((m) => MedicationMapper.toDTO(m))
   }
 }

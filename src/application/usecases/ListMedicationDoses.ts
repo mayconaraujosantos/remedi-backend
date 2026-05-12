@@ -10,8 +10,16 @@ export class ListMedicationDoses {
     private readonly doseEventRepository: DoseEventRepository
   ) {}
 
-  async execute(medicationId: string, startDate?: Date, endDate?: Date): Promise<DoseEventResponseDTO[]> {
-    const doses = await this.doseEventRepository.findByMedicationId(medicationId, startDate, endDate)
+  async execute(
+    medicationId: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<DoseEventResponseDTO[]> {
+    const doses = await this.doseEventRepository.findByMedicationId(
+      medicationId,
+      startDate,
+      endDate
+    )
     return doses.map(DoseEventMapper.toDTO)
   }
 }

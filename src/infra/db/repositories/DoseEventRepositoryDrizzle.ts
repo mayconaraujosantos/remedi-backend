@@ -15,13 +15,12 @@ export class DoseEventRepositoryDrizzle implements DoseEventRepository {
 
   async update(event: DoseEvent): Promise<void> {
     const data = DoseEventMapper.toPersistence(event)
-    await db.update(doseEvents)
-      .set(data)
-      .where(eq(doseEvents.id, event.id))
+    await db.update(doseEvents).set(data).where(eq(doseEvents.id, event.id))
   }
 
   async findById(id: string): Promise<DoseEvent | null> {
-    const [data] = await db.select()
+    const [data] = await db
+      .select()
       .from(doseEvents)
       .where(eq(doseEvents.id, id))
       .limit(1)
@@ -29,14 +28,22 @@ export class DoseEventRepositoryDrizzle implements DoseEventRepository {
     return data ? DoseEventMapper.toDomain(data) : null
   }
 
-  async findByMedicationId(medicationId: string, startDate?: Date, endDate?: Date): Promise<DoseEvent[]> {
-    let query = db.select().from(doseEvents).where(eq(doseEvents.medicationId, medicationId))
+  async findByMedicationId(
+    medicationId: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<DoseEvent[]> {
+    let query = db
+      .select()
+      .from(doseEvents)
+      .where(eq(doseEvents.medicationId, medicationId))
 
     const conditions = [eq(doseEvents.medicationId, medicationId)]
     if (startDate) conditions.push(gte(doseEvents.scheduledAt, startDate))
     if (endDate) conditions.push(lte(doseEvents.scheduledAt, endDate))
 
-    const results = await db.select()
+    const results = await db
+      .select()
       .from(doseEvents)
       .where(and(...conditions))
 
@@ -44,7 +51,8 @@ export class DoseEventRepositoryDrizzle implements DoseEventRepository {
   }
 
   async listPending(): Promise<DoseEvent[]> {
-    const results = await db.select()
+    const results = await db
+      .select()
       .from(doseEvents)
       .where(eq(doseEvents.status, 'PENDING'))
 

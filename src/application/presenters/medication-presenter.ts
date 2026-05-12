@@ -6,14 +6,14 @@ export class MedicationPresenter {
       ...dto,
       links: {
         self: `/medications/${dto.id}`,
-      }
+      },
     }
   }
 
   static toHTTPList(dtos: MedicationResponseDTO[]) {
     return {
       items: dtos.map(this.toHTTP),
-      total: dtos.length
+      total: dtos.length,
     }
   }
 }

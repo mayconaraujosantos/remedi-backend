@@ -25,11 +25,10 @@ export class MedicationMapper {
       active: domain.active,
       createdAt: domain.createdAt,
       // Temporal fields now managed by MedicationSchedule
-      frequency: '', 
+      frequency: '',
       startDate: new Date(),
       nextDoseAt: new Date(),
       endDate: null,
     }
   }
 }
-

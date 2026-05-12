@@ -12,19 +12,20 @@ export class MarkDoseAsTaken {
 
   async execute(doseId: string): Promise<void> {
     const dose = await this.doseEventRepository.findById(doseId)
-    
+
     if (!dose) {
       throw new AppError('Dose event not found', 404)
     }
 
     if (dose.status !== 'PENDING') {
-      throw new AppError(`Cannot mark dose as taken. Current status: ${dose.status}`, 400)
+      throw new AppError(
+        `Cannot mark dose as taken. Current status: ${dose.status}`,
+        400
+      )
     }
 
     dose.markAsTaken()
     await this.doseEventRepository.update(dose)
     trackDoseTaken('planned')
-
   }
 }
-

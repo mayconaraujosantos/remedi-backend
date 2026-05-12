@@ -21,9 +21,13 @@ export class DoseController {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async listByMedication(medicationId: string, query: any) {
-    const startDate = query.startDate ? DateUtils.parse(query.startDate, 'startDate') : undefined
-    const endDate = query.endDate ? DateUtils.parse(query.endDate, 'endDate') : undefined
-    
+    const startDate = query.startDate
+      ? DateUtils.parse(query.startDate, 'startDate')
+      : undefined
+    const endDate = query.endDate
+      ? DateUtils.parse(query.endDate, 'endDate')
+      : undefined
+
     return this.doseService.listByMedication(medicationId, startDate, endDate)
   }
 
@@ -32,4 +36,3 @@ export class DoseController {
     return { message: 'Ad-hoc dose registered', dose }
   }
 }
-

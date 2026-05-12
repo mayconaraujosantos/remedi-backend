@@ -16,19 +16,25 @@ export class GenerateDoseEvents {
     private readonly queueProvider: QueueProvider
   ) {}
 
-  async execute(schedule: MedicationSchedule, daysToGenerate: number = 7): Promise<void> {
-    const medication = await this.medicationRepository.findById(schedule.medicationId)
+  async execute(
+    schedule: MedicationSchedule,
+    daysToGenerate: number = 7
+  ): Promise<void> {
+    const medication = await this.medicationRepository.findById(
+      schedule.medicationId
+    )
     if (!medication) return
 
     const doses: DoseEvent[] = []
     const start = new Date(schedule.startDate)
     const endWindow = new Date()
     endWindow.setDate(endWindow.getDate() + daysToGenerate)
-    
+
     // Se o agendamento tiver uma data de término, respeitá-la
-    const maxDate = schedule.endDate && schedule.endDate < endWindow 
-      ? schedule.endDate 
-      : endWindow
+    const maxDate =
+      schedule.endDate && schedule.endDate < endWindow
+        ? schedule.endDate
+        : endWindow
 
     switch (schedule.type) {
       case 'ONCE':
@@ -54,19 +60,27 @@ export class GenerateDoseEvents {
 
       if (delay > 0) {
         // Job para lembrar
-        await this.queueProvider.addJob('dose-reminder', {
-          doseId: dose.id,
-          medicationName: medication.name,
-          scheduledAt: dose.scheduledAt,
-        }, delay)
+        await this.queueProvider.addJob(
+          'dose-reminder',
+          {
+            doseId: dose.id,
+            medicationName: medication.name,
+            scheduledAt: dose.scheduledAt,
+          },
+          delay
+        )
 
         // Job para verificar se foi perdida (2 horas depois)
-        const missedDelay = delay + (2 * 60 * 60 * 1000)
-        await this.queueProvider.addJob('check-missed-dose', {
-          doseId: dose.id,
-          medicationName: medication.name,
-          scheduledAt: dose.scheduledAt,
-        }, missedDelay)
+        const missedDelay = delay + 2 * 60 * 60 * 1000
+        await this.queueProvider.addJob(
+          'check-missed-dose',
+          {
+            doseId: dose.id,
+            medicationName: medication.name,
+            scheduledAt: dose.scheduledAt,
+          },
+          missedDelay
+        )
       }
     }
   }
@@ -74,42 +88,58 @@ export class GenerateDoseEvents {
   private generateOnceDoses(schedule: MedicationSchedule, doses: DoseEvent[]) {
     for (const time of schedule.times) {
       const scheduledAt = this.combineDateAndTime(schedule.startDate, time)
-      doses.push(new DoseEvent({
-        medicationId: schedule.medicationId,
-        scheduledAt
-      }))
+      doses.push(
+        new DoseEvent({
+          medicationId: schedule.medicationId,
+          scheduledAt,
+        })
+      )
     }
   }
 
-  private generateDailyDoses(schedule: MedicationSchedule, start: Date, end: Date, doses: DoseEvent[]) {
+  private generateDailyDoses(
+    schedule: MedicationSchedule,
+    start: Date,
+    end: Date,
+    doses: DoseEvent[]
+  ) {
     const current = new Date(start)
     while (current <= end) {
       for (const time of schedule.times) {
         const scheduledAt = this.combineDateAndTime(current, time)
         if (scheduledAt >= start && scheduledAt <= end) {
-          doses.push(new DoseEvent({
-            medicationId: schedule.medicationId,
-            scheduledAt
-          }))
+          doses.push(
+            new DoseEvent({
+              medicationId: schedule.medicationId,
+              scheduledAt,
+            })
+          )
         }
       }
       current.setDate(current.getDate() + 1)
     }
   }
 
-  private generateWeeklyDoses(schedule: MedicationSchedule, start: Date, end: Date, doses: DoseEvent[]) {
+  private generateWeeklyDoses(
+    schedule: MedicationSchedule,
+    start: Date,
+    end: Date,
+    doses: DoseEvent[]
+  ) {
     const current = new Date(start)
     const daysOfWeek = schedule.daysOfWeek || []
-    
+
     while (current <= end) {
       if (daysOfWeek.includes(current.getDay())) {
         for (const time of schedule.times) {
           const scheduledAt = this.combineDateAndTime(current, time)
           if (scheduledAt >= start && scheduledAt <= end) {
-            doses.push(new DoseEvent({
-              medicationId: schedule.medicationId,
-              scheduledAt
-            }))
+            doses.push(
+              new DoseEvent({
+                medicationId: schedule.medicationId,
+                scheduledAt,
+              })
+            )
           }
         }
       }
@@ -117,15 +147,22 @@ export class GenerateDoseEvents {
     }
   }
 
-  private generateIntervalDoses(schedule: MedicationSchedule, start: Date, end: Date, doses: DoseEvent[]) {
+  private generateIntervalDoses(
+    schedule: MedicationSchedule,
+    start: Date,
+    end: Date,
+    doses: DoseEvent[]
+  ) {
     const interval = schedule.intervalHours || 24
     let current = new Date(start)
-    
+
     while (current <= end) {
-      doses.push(new DoseEvent({
-        medicationId: schedule.medicationId,
-        scheduledAt: new Date(current)
-      }))
+      doses.push(
+        new DoseEvent({
+          medicationId: schedule.medicationId,
+          scheduledAt: new Date(current),
+        })
+      )
       current = new Date(current.getTime() + interval * 60 * 60 * 1000)
     }
   }
@@ -138,5 +175,4 @@ export class GenerateDoseEvents {
     }
     return newDate
   }
-
 }

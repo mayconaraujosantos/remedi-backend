@@ -19,8 +19,8 @@ export class MedicationMapper {
   }
 
   static toDomain(dto: any): Medication {
-     // Implementar se necessário converter de DTO para Domínio
-     // Geralmente o UseCase já recebe os dados e cria a entidade
-     throw new Error('Not implemented')
+    // Implementar se necessário converter de DTO para Domínio
+    // Geralmente o UseCase já recebe os dados e cria a entidade
+    throw new Error('Not implemented')
   }
 }

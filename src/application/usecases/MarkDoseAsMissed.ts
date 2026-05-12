@@ -12,7 +12,7 @@ export class MarkDoseAsMissed {
 
   async execute(doseId: string): Promise<void> {
     const dose = await this.doseEventRepository.findById(doseId)
-    
+
     if (!dose) return
 
     if (dose.status === 'PENDING') {
@@ -23,4 +23,3 @@ export class MarkDoseAsMissed {
     }
   }
 }
-

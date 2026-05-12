@@ -15,7 +15,7 @@ describe('MarkDoseAsTaken', () => {
       update: vi.fn(),
     }
     sut = new MarkDoseAsTaken(doseEventRepository)
-    
+
     // Spy on metrics
     vi.spyOn(metrics, 'trackDoseTaken').mockImplementation(() => {})
   })
@@ -45,7 +45,9 @@ describe('MarkDoseAsTaken', () => {
     doseEventRepository.findById.mockResolvedValue(null)
 
     await expect(sut.execute('invalid-id')).rejects.toThrow(AppError)
-    await expect(sut.execute('invalid-id')).rejects.toThrow('Dose event not found')
+    await expect(sut.execute('invalid-id')).rejects.toThrow(
+      'Dose event not found'
+    )
   })
 
   it('should throw error if dose is already taken', async () => {

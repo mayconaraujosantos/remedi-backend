@@ -1,4 +1,7 @@
-import { MedicationSchedule, ScheduleType } from '@/domain/entities/MedicationSchedule'
+import {
+  MedicationSchedule,
+  ScheduleType,
+} from '@/domain/entities/MedicationSchedule'
 import type { MedicationScheduleRow } from '../schema/schema'
 
 export class MedicationScheduleMapper {
