@@ -1,6 +1,11 @@
 import { FastifyInstance } from 'fastify'
 import { container } from 'tsyringe'
+import { z } from 'zod'
 import { DoseController } from '../controllers/DoseController'
+
+const routeParamsSchema = z.object({
+  id: z.string(),
+})
 
 export async function doseRoutes(app: FastifyInstance) {
   const controller = container.resolve(DoseController)
@@ -10,10 +15,7 @@ export async function doseRoutes(app: FastifyInstance) {
     {
       schema: {
         tags: ['Adherence'],
-        params: {
-          type: 'object',
-          properties: { id: { type: 'string' } },
-        },
+        params: routeParamsSchema,
       },
     },
     async (request, reply) => {
@@ -28,10 +30,7 @@ export async function doseRoutes(app: FastifyInstance) {
     {
       schema: {
         tags: ['Adherence'],
-        params: {
-          type: 'object',
-          properties: { id: { type: 'string' } },
-        },
+        params: routeParamsSchema,
       },
     },
     async (request, reply) => {
@@ -46,10 +45,7 @@ export async function doseRoutes(app: FastifyInstance) {
     {
       schema: {
         tags: ['Adherence'],
-        params: {
-          type: 'object',
-          properties: { id: { type: 'string' } },
-        },
+        params: routeParamsSchema,
       },
     },
     async (request, reply) => {
@@ -65,10 +61,7 @@ export async function doseRoutes(app: FastifyInstance) {
       schema: {
         tags: ['Adherence'],
         summary: 'Register an ad-hoc (extra) dose',
-        params: {
-          type: 'object',
-          properties: { id: { type: 'string' } },
-        },
+        params: routeParamsSchema,
       },
     },
     async (request, reply) => {
@@ -78,4 +71,3 @@ export async function doseRoutes(app: FastifyInstance) {
     }
   )
 }
-

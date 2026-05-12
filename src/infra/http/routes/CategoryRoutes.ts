@@ -9,7 +9,10 @@ export async function categoryRoutes(app: FastifyInstance) {
   app.post(
     '/',
     {
-      schema: { tags: ['Categories'] },
+      schema: {
+        tags: ['Categories'],
+        body: createCategorySchema,
+      },
     },
     async (request, reply) => {
       const data = createCategorySchema.parse(request.body)

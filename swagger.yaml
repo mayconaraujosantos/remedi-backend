@@ -1,0 +1,236 @@
+openapi: 3.0.3
+info:
+  title: Reminder API
+  description: Medication and reminder organizer API
+  version: 1.0.0
+components:
+  schemas: {}
+paths:
+  /reminders/:
+    post:
+      summary: Create a reminder
+      tags:
+        - Reminders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                description:
+                  type: string
+                dueDate:
+                  type: string
+                  format: date-time
+              required:
+                - title
+                - dueDate
+              additionalProperties: false
+      responses:
+        "200":
+          description: Default Response
+    get:
+      summary: List all reminders
+      tags:
+        - Reminders
+      responses:
+        "200":
+          description: Default Response
+  /reminders/{id}:
+    put:
+      tags:
+        - Reminders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  minLength: 1
+                title:
+                  type: string
+                  minLength: 1
+                description:
+                  type: string
+                dueDate:
+                  type: string
+                  format: date-time
+                completed:
+                  type: boolean
+              additionalProperties: false
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /medications/:
+    post:
+      summary: Create medication
+      tags:
+        - Medications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                description:
+                  type: string
+                dosage:
+                  type: string
+                  minLength: 1
+                categoryId:
+                  type: string
+                schedule:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - ONCE
+                        - DAILY
+                        - WEEKLY
+                        - INTERVAL
+                    times:
+                      type: array
+                      items:
+                        type: string
+                        pattern: ^([01]\d|2[0-3]):([0-5]\d)$
+                    intervalHours:
+                      type: integer
+                      exclusiveMinimum: true
+                      minimum: 0
+                    daysOfWeek:
+                      type: array
+                      items:
+                        type: integer
+                        minimum: 0
+                        maximum: 6
+                    startDate:
+                      allOf:
+                        - type: string
+                        - type: string
+                          format: date-time
+                    endDate:
+                      allOf:
+                        - type: string
+                        - type: string
+                          format: date-time
+                  required:
+                    - type
+                    - times
+                    - startDate
+                  additionalProperties: false
+              required:
+                - name
+                - dosage
+                - schedule
+              additionalProperties: false
+      responses:
+        "200":
+          description: Default Response
+    get:
+      tags:
+        - Medications
+      responses:
+        "200":
+          description: Default Response
+  /categories/:
+    post:
+      tags:
+        - Categories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                color:
+                  type: string
+              required:
+                - name
+              additionalProperties: false
+      responses:
+        "200":
+          description: Default Response
+    get:
+      tags:
+        - Categories
+      responses:
+        "200":
+          description: Default Response
+  /medications/doses/{id}/take:
+    patch:
+      tags:
+        - Adherence
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /medications/doses/{id}/skip:
+    patch:
+      tags:
+        - Adherence
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /medications/{id}/doses:
+    get:
+      tags:
+        - Adherence
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /medications/{id}/doses/ad-hoc:
+    post:
+      summary: Register an ad-hoc (extra) dose
+      tags:
+        - Adherence
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Default Response
+servers:
+  - url: http://localhost:3333
+    description: Development

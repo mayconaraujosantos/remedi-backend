@@ -1,8 +1,13 @@
 import { FastifyInstance } from 'fastify'
 import { container } from 'tsyringe'
+import { z } from 'zod'
 import { ReminderController } from '../controllers/ReminderController'
 import { createReminderSchema } from '../validators/CreateReminderValidator'
 import { updateReminderSchema } from '../validators/UpdateReminderValidator'
+
+const routeParamsSchema = z.object({
+  id: z.string(),
+})
 
 export async function reminderRoutes(app: FastifyInstance) {
   const controller = container.resolve(ReminderController)
@@ -13,15 +18,7 @@ export async function reminderRoutes(app: FastifyInstance) {
       schema: {
         tags: ['Reminders'],
         summary: 'Create a reminder',
-        body: {
-          type: 'object',
-          required: ['title', 'dueDate'],
-          properties: {
-            title: { type: 'string', minLength: 1 },
-            description: { type: 'string' },
-            dueDate: { type: 'string', format: 'date-time' },
-          },
-        },
+        body: createReminderSchema,
       },
     },
     async (request, reply) => {
@@ -53,10 +50,8 @@ export async function reminderRoutes(app: FastifyInstance) {
     {
       schema: {
         tags: ['Reminders'],
-        params: {
-          type: 'object',
-          properties: { id: { type: 'string' } },
-        },
+        params: routeParamsSchema,
+        body: updateReminderSchema,
       },
     },
     async (request, reply) => {

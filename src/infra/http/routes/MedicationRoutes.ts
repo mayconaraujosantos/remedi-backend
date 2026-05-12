@@ -12,6 +12,7 @@ export async function medicationRoutes(app: FastifyInstance) {
       schema: {
         tags: ['Medications'],
         summary: 'Create medication',
+        body: createMedicationSchema,
       },
     },
     async (request, reply) => {
