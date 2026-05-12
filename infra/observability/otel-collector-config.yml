@@ -28,9 +28,12 @@ exporters:
   prometheus:
     endpoint: "0.0.0.0:8889"
     namespace: reminder_api
-    const_labels:
-      environment: development
-      service: reminder-api
+
+  otlphttp/loki:
+    endpoint: http://loki:3100/otlp
+
+  otlphttp/tempo:
+    endpoint: http://tempo:4318
 
   debug:
     verbosity: basic
@@ -44,8 +47,8 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, batch, attributes]
-      exporters: [debug]
+      exporters: [otlphttp/tempo, debug]
     logs:
       receivers: [otlp]
       processors: [batch, attributes]
-      exporters: [debug]
+      exporters: [otlphttp/loki, debug]

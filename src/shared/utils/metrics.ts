@@ -15,8 +15,15 @@ export const dosesMissedTotal = meter.createCounter('doses_missed_total', {
   description: 'Total number of doses marked as missed',
 })
 
-export const notificationFailuresTotal = meter.createCounter('notification_failures_total', {
-  description: 'Total number of notification delivery failures',
+export const notificationFailuresTotal = meter.createCounter(
+  'notification_failures_total',
+  {
+    description: 'Total number of notification delivery failures',
+  }
+)
+
+export const httpServerErrors = meter.createCounter('http_server_errors', {
+  description: 'Total number of unhandled HTTP server errors',
 })
 
 // Gauge for Adherence Rate
@@ -25,10 +32,13 @@ export const adherenceRate = meter.createUpDownCounter('adherence_rate', {
 })
 
 // Histogram for Latency
-export const notificationLatency = meter.createHistogram('notification_latency', {
-  description: 'Time taken to process and send a notification',
-  unit: 'ms',
-})
+export const notificationLatency = meter.createHistogram(
+  'notification_latency',
+  {
+    description: 'Time taken to process and send a notification',
+    unit: 'ms',
+  }
+)
 
 // Helper functions for easy tracking
 let takenCount = 0
@@ -40,17 +50,30 @@ export const trackDoseTaken = (type: 'planned' | 'adhoc' = 'planned') => {
   updateAdherenceRate()
 }
 
-
 export const trackDoseMissed = () => {
   dosesMissedTotal.add(1)
   missedCount++
   updateAdherenceRate()
 }
 
+export const trackHttpServerError = (data: {
+  method: string
+  route: string
+  statusCode: number
+  errorType: string
+}) => {
+  httpServerErrors.add(1, {
+    error_type: data.errorType,
+    http_method: data.method,
+    http_route: data.route,
+    http_status_code: String(data.statusCode),
+  })
+}
+
 function updateAdherenceRate() {
   const total = takenCount + missedCount
   if (total === 0) return
-  
+
   const rate = (takenCount / total) * 100
   // Note: UpDownCounter used as a pseudo-gauge for current rate
   // In a real Prometheus setup, this calculation often happens in PromQL

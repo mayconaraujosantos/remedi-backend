@@ -1,4 +1,5 @@
 import { inject, injectable } from 'tsyringe'
+import { SpanStatusCode, trace } from '@opentelemetry/api'
 import Fastify, {
   type FastifyInstance,
   type FastifyReply,
@@ -11,7 +12,8 @@ import {
   jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
-} from '@fastify/type-provider-zod'
+  type ZodTypeProvider,
+} from 'fastify-type-provider-zod'
 
 import { reminderRoutes } from '@/infra/http/routes/ReminderRoutes'
 import { medicationRoutes } from '@/infra/http/routes/MedicationRoutes'
@@ -20,13 +22,14 @@ import { doseRoutes } from '@/infra/http/routes/DoseRoutes'
 
 import { AppError } from '@/shared/errors/AppError'
 import { logger } from '@/shared/utils/logger'
+import { trackHttpServerError } from '@/shared/utils/metrics'
 
 @injectable()
 export class Server {
   private readonly app: FastifyInstance
 
   constructor() {
-    this.app = Fastify()
+    this.app = Fastify().withTypeProvider<ZodTypeProvider>()
   }
 
   public async start(port: number): Promise<void> {
@@ -41,23 +44,13 @@ export class Server {
       this.setupErrorHandler()
       await this.setupRoutes()
 
+      await this.app.ready()
       // 4. Inicialização
       const address = await this.app.listen({ port, host: '0.0.0.0' })
       logger.info(`🚀 Server listening at ${address}`)
       logger.info(`📖 Documentation available at ${address}/docs`)
 
-      // Exportar Swagger YAML para outras squads (após o listen para garantir registro completo)
-      try {
-        const yaml = this.app.swagger({ yaml: true })
-        const fs = await import('node:fs/promises')
-        const path = await import('node:path')
-        await fs.writeFile(path.resolve(process.cwd(), 'swagger.yaml'), yaml)
-        logger.info('📝 Swagger YAML exported to root directory')
-      } catch (swaggerError) {
-        logger.error('⚠️ Failed to export Swagger YAML: %o', swaggerError)
-      }
-
-
+      await this.exportSwaggerConfig()
     } catch (err) {
       logger.error('❌ Error starting server: %o', err)
       process.exit(1)
@@ -104,6 +97,20 @@ export class Server {
         })
       }
 
+      const activeSpan = trace.getActiveSpan()
+      activeSpan?.recordException(error)
+      activeSpan?.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: error.message,
+      })
+
+      trackHttpServerError({
+        method: request.method,
+        route: request.routeOptions.url ?? request.url,
+        statusCode: 500,
+        errorType: error.name ?? 'Error',
+      })
+
       logger.error('Unhandled error: %o', error)
       return reply.status(500).send({ message: 'Internal server error' })
     })
@@ -115,5 +122,17 @@ export class Server {
     await this.app.register(categoryRoutes, { prefix: '/categories' })
     await this.app.register(doseRoutes, { prefix: '/medications' }) // Note: DoseRoutes handles /doses and /:id/doses
   }
-}
 
+  private async exportSwaggerConfig(): Promise<void> {
+    try {
+      const yaml = this.app.swagger({ yaml: true })
+      const fs = await import('node:fs/promises')
+      const path = await import('node:path')
+
+      await fs.writeFile(path.resolve(process.cwd(), 'swagger.yaml'), yaml)
+      logger.info('📝 Swagger YAML exported to root directory')
+    } catch (swaggerError) {
+      logger.error('⚠️ Failed to export Swagger YAML: %o', swaggerError)
+    }
+  }
+}

@@ -26,10 +26,12 @@ const sdk = new NodeSDK({
     [SemanticResourceAttributes.SERVICE_VERSION]: config.otel.serviceVersion,
   }),
   traceExporter,
-  metricReader: new PeriodicExportingMetricReader({
-    exporter: metricExporter,
-    exportIntervalMillis: 10000,
-  }),
+  metricReaders: [
+    new PeriodicExportingMetricReader({
+      exporter: metricExporter,
+      exportIntervalMillis: 10000,
+    }),
+  ],
   instrumentations: [getNodeAutoInstrumentations()],
 })
 
