@@ -24,7 +24,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -68,8 +68,11 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "rate(reminder_api_http_server_duration_milliseconds_count[5m])",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "rate(reminder_api_http_server_duration_milliseconds_count{job=\"reminder-api\"}[5m])",
           "legendFormat": "Requests per second",
           "refId": "A"
         }
@@ -80,7 +83,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -124,8 +127,11 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "rate(reminder_api_http_server_duration_milliseconds_sum[5m]) / rate(reminder_api_http_server_duration_milliseconds_count[5m])",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "rate(reminder_api_http_server_duration_milliseconds_sum{job=\"reminder-api\"}[5m]) / rate(reminder_api_http_server_duration_milliseconds_count{job=\"reminder-api\"}[5m])",
           "legendFormat": "Average Response Time",
           "refId": "A"
         }
@@ -136,7 +142,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -165,8 +171,11 @@
       "pluginVersion": "8.0.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "sum(rate(reminder_api_http_server_duration_milliseconds_count{http_response_status_code=~\"5..\"}[5m])) / sum(rate(reminder_api_http_server_duration_milliseconds_count[5m])) * 100",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "sum(rate(reminder_api_http_server_duration_milliseconds_count{job=\"reminder-api\", http_response_status_code=~\"5..\"}[5m])) / sum(rate(reminder_api_http_server_duration_milliseconds_count{job=\"reminder-api\"}[5m])) * 100",
           "legendFormat": "Error Rate",
           "refId": "A"
         }
@@ -177,7 +186,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -200,8 +209,11 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "expr": "sum by (http_request_method) (rate(reminder_api_http_server_duration_milliseconds_count[5m]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "sum by (http_request_method) (rate(reminder_api_http_server_duration_milliseconds_count{job=\"reminder-api\"}[5m]))",
           "legendFormat": "{{http_request_method}}",
           "refId": "A"
         }
@@ -211,10 +223,31 @@
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 36,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": ["reminder-api", "observability"],
-  "templating": { "list": [] },
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "Prometheus",
+          "value": "prometheus"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "DS_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrl": false,
+        "type": "datasource"
+      }
+    ]
+  },
   "time": { "from": "now-1h", "to": "now" },
   "timepicker": {},
   "timezone": "browser",

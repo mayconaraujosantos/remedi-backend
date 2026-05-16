@@ -37,7 +37,7 @@ services:
     restart: unless-stopped
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:11.5.2
     container_name: grafana
     volumes:
       - ../observability/grafana/provisioning:/etc/grafana/provisioning
@@ -45,7 +45,9 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      # Removido grafana-piechart-panel pois Pie Chart já é nativo e o plugin usa Angular (depreciado)
+      - GF_INSTALL_PLUGINS=
+      - GF_ANGULAR_SUPPORT_ENABLED=false
     ports:
       - "3000:3000"
     depends_on:
@@ -72,10 +74,11 @@ services:
   tempo:
     image: grafana/tempo:latest
     container_name: tempo
+    user: root
     command: ["-config.file=/etc/tempo/config.yml"]
     volumes:
       - ../observability/tempo-config.yml:/etc/tempo/config.yml
-      - tempo-data:/tmp/tempo
+      - tempo-data:/var/tempo
     ports:
       - "3200:3200"
     networks:
