@@ -2,6 +2,7 @@ import { Worker, Job } from 'bullmq'
 import { inject, injectable } from 'tsyringe'
 import type { GenerateDoseEvents } from '@/application/usecases/GenerateDoseEvents'
 import type { MedicationScheduleRepository } from '@/domain/repositories/MedicationScheduleRepository'
+import { connection } from '@/infra/cache/redis'
 import { logger } from '@/shared/utils/logger'
 
 interface GenerateDoseEventsJobData {
@@ -36,10 +37,7 @@ export class GenerateDoseEventsWorker {
         await this.generateDoseEvents.execute(schedule, daysToGenerate)
       },
       {
-        connection: {
-          host: process.env.REDIS_HOST || 'localhost',
-          port: Number(process.env.REDIS_PORT) || 6379,
-        },
+        connection,
         removeOnComplete: { count: 100 },
         removeOnFail: { count: 500 },
       }

@@ -9,8 +9,10 @@ export const config = {
     url: process.env.DATABASE_URL,
   },
   redis: {
+    url: process.env.REDIS_URL,
     host: process.env.REDIS_HOST || 'localhost',
     port: Number(process.env.REDIS_PORT) || 6379,
+    password: process.env.REDIS_PASSWORD,
   },
   otel: {
     serviceName: process.env.OTEL_SERVICE_NAME || 'reminder-api',

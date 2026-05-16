@@ -1,8 +1,2 @@
-import Redis from 'ioredis'
-import { config } from '@/main/config/config'
-
-export const connection = new Redis({
-  host: config.redis.host,
-  port: config.redis.port,
-  maxRetriesPerRequest: null, // Necessário para BullMQ
-})
+/** @deprecated Import from `@/infra/cache/redis` instead */
+export { connection, redis } from '@/infra/cache/redis'
