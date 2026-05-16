@@ -12,7 +12,7 @@ export class DateUtils {
 
     // Se já for Date e for válido
     if (value instanceof Date) {
-      if (isNaN(value.getTime())) {
+      if (Number.isNaN(value.getTime())) {
         throw new AppError(`Invalid ${fieldName}: invalid Date object`, 400)
       }
       return value
