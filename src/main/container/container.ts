@@ -33,6 +33,7 @@ import { GenerateDoseEvents } from '@/application/usecases/GenerateDoseEvents'
 import { MarkDoseAsMissed } from '@/application/usecases/MarkDoseAsMissed'
 import { DoseService } from '@/application/services/DoseService'
 import { DoseController } from '@/infra/http/controllers/DoseController'
+import { HealthController } from '@/infra/http/controllers/HealthController'
 
 container.registerSingleton('ReminderRepository', ReminderRepositoryDrizzle)
 container.registerSingleton('MedicationRepository', MedicationRepositoryDrizzle)
@@ -71,4 +72,5 @@ container.registerSingleton(ReminderController)
 container.registerSingleton(MedicationController)
 container.registerSingleton(CategoryController)
 container.registerSingleton(DoseController)
+container.registerSingleton(HealthController)
 container.registerSingleton(Server)

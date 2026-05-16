@@ -1,147 +1,26 @@
 import { injectable } from 'tsyringe'
-import { SpanStatusCode, trace } from '@opentelemetry/api'
-import Fastify, { type FastifyError, type FastifyInstance } from 'fastify'
-import fastifyCors from '@fastify/cors'
-import fastifySwagger from '@fastify/swagger'
-import fastifySwaggerUi from '@fastify/swagger-ui'
-import {
-  jsonSchemaTransform,
-  serializerCompiler,
-  validatorCompiler,
-  type ZodTypeProvider,
-} from 'fastify-type-provider-zod'
 
-import { reminderRoutes } from '@/infra/http/routes/ReminderRoutes'
-import { medicationRoutes } from '@/infra/http/routes/MedicationRoutes'
-import { categoryRoutes } from '@/infra/http/routes/CategoryRoutes'
-import { doseRoutes } from '@/infra/http/routes/DoseRoutes'
-
-import { AppError } from '@/shared/errors/AppError'
+import { createServer } from '@/infra/http/server/createServer'
+import { exportSwaggerYaml } from '@/infra/http/server/docs/exportSwaggerYaml'
+import { setupGracefulShutdown } from '@/infra/http/server/lifecycle/setupGracefulShutdown'
 import { logger } from '@/shared/utils/logger'
-import { trackHttpServerError } from '@/shared/utils/metrics'
 
 @injectable()
 export class Server {
-  private readonly app: FastifyInstance
-
-  constructor() {
-    this.app = Fastify().withTypeProvider<ZodTypeProvider>()
-  }
-
   public async start(port: number): Promise<void> {
     try {
-      // 1. Configurações Base
-      this.setupBaseConfig()
+      const app = await createServer()
+      setupGracefulShutdown(app)
 
-      // 2. Plugins Assíncronos
-      await this.setupPlugins()
-
-      // 3. Rotas e Handlers
-      this.setupErrorHandler()
-      await this.setupRoutes()
-
-      await this.app.ready()
-      // 4. Inicialização
-      const address = await this.app.listen({ port, host: '0.0.0.0' })
+      await app.ready()
+      const address = await app.listen({ port, host: '0.0.0.0' })
       logger.info(`🚀 Server listening at ${address}`)
       logger.info(`📖 Documentation available at ${address}/docs`)
 
-      await this.exportSwaggerConfig()
+      await exportSwaggerYaml(app)
     } catch (err) {
       logger.error('❌ Error starting server: %o', err)
       process.exit(1)
-    }
-  }
-
-  private setupBaseConfig(): void {
-    this.app.setValidatorCompiler(validatorCompiler)
-    this.app.setSerializerCompiler(serializerCompiler)
-  }
-
-  private async setupPlugins(): Promise<void> {
-    await this.app.register(fastifyCors, { origin: true })
-
-    await this.app.register(fastifySwagger, {
-      openapi: {
-        info: {
-          title: 'Reminder API',
-          description: 'Medication and reminder organizer API',
-          version: '1.0.0',
-        },
-        servers: [{ url: 'http://localhost:3333', description: 'Development' }],
-      },
-      transform: jsonSchemaTransform,
-    })
-
-    await this.app.register(fastifySwaggerUi, {
-      routePrefix: '/docs',
-      uiConfig: { docExpansion: 'list', deepLinking: false },
-    })
-  }
-
-  private setupErrorHandler(): void {
-    this.app.setErrorHandler((error: FastifyError, request, reply) => {
-      if (error instanceof AppError) {
-        logger.warn('Handled application error: %s', error.message)
-        return reply.status(error.statusCode).send({ message: error.message })
-      }
-
-      if (error.validation) {
-        return reply.status(400).send({
-          message: 'Validation error',
-          errors: error.validation,
-        })
-      }
-
-      // Fastify 4xx errors (invalid JSON, unsupported media type, etc.)
-      // are client errors — log as warn and return the original status code
-      if (error.statusCode && error.statusCode < 500) {
-        logger.warn(
-          'Client error [%s]: %s',
-          error.code ?? error.statusCode,
-          error.message
-        )
-        return reply.status(error.statusCode).send({ message: error.message })
-      }
-
-      const activeSpan = trace.getActiveSpan()
-      activeSpan?.recordException(error)
-      activeSpan?.setStatus({
-        code: SpanStatusCode.ERROR,
-        message: error.message,
-      })
-
-      trackHttpServerError({
-        method: request.method,
-        route: request.routeOptions.url ?? request.url,
-        statusCode: error.statusCode ?? 500,
-        errorType: error.name ?? 'Error',
-      })
-
-      logger.error('Unhandled error: %o', error)
-      return reply
-        .status(error.statusCode ?? 500)
-        .send({ message: 'Internal server error' })
-    })
-  }
-
-  private async setupRoutes(): Promise<void> {
-    await this.app.register(reminderRoutes, { prefix: '/reminders' })
-    await this.app.register(medicationRoutes, { prefix: '/medications' })
-    await this.app.register(categoryRoutes, { prefix: '/categories' })
-    await this.app.register(doseRoutes, { prefix: '/medications' }) // Note: DoseRoutes handles /doses and /:id/doses
-  }
-
-  private async exportSwaggerConfig(): Promise<void> {
-    try {
-      const yaml = this.app.swagger({ yaml: true })
-      const fs = await import('node:fs/promises')
-      const path = await import('node:path')
-
-      await fs.writeFile(path.resolve(process.cwd(), 'swagger.yaml'), yaml)
-      logger.info('📝 Swagger YAML exported to root directory')
-    } catch (swaggerError) {
-      logger.error('⚠️ Failed to export Swagger YAML: %o', swaggerError)
     }
   }
 }

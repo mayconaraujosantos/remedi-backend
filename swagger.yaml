@@ -6,6 +6,78 @@ info:
 components:
   schemas: {}
 paths:
+  /health:
+    get:
+      summary: Health check
+      tags:
+        - Health
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - ok
+                      - degraded
+                  checks:
+                    type: object
+                    properties:
+                      db:
+                        type: string
+                        enum:
+                          - ok
+                          - error
+                      redis:
+                        type: string
+                        enum:
+                          - ok
+                          - error
+                    required:
+                      - db
+                      - redis
+                    additionalProperties: false
+                required:
+                  - status
+                  - checks
+                additionalProperties: false
+        "503":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - ok
+                      - degraded
+                  checks:
+                    type: object
+                    properties:
+                      db:
+                        type: string
+                        enum:
+                          - ok
+                          - error
+                      redis:
+                        type: string
+                        enum:
+                          - ok
+                          - error
+                    required:
+                      - db
+                      - redis
+                    additionalProperties: false
+                required:
+                  - status
+                  - checks
+                additionalProperties: false
   /reminders/:
     post:
       summary: Create a reminder
