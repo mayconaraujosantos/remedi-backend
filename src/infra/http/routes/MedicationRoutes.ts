@@ -56,8 +56,11 @@ export async function medicationRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { id } = request.params as { id: string }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data = updateMedicationSchema.parse({ ...(request.body as any), id })
+
+      const data = updateMedicationSchema.parse({
+        ...(request.body as Record<string, unknown>),
+        id,
+      })
       const medication = await controller.update(data)
       return reply.send(medication)
     }

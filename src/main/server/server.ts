@@ -1,10 +1,6 @@
-import { inject, injectable } from 'tsyringe'
+import { injectable } from 'tsyringe'
 import { SpanStatusCode, trace } from '@opentelemetry/api'
-import Fastify, {
-  type FastifyInstance,
-  type FastifyReply,
-  type FastifyRequest,
-} from 'fastify'
+import Fastify, { type FastifyError, type FastifyInstance } from 'fastify'
 import fastifyCors from '@fastify/cors'
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
@@ -84,7 +80,7 @@ export class Server {
   }
 
   private setupErrorHandler(): void {
-    this.app.setErrorHandler((error: any, request, reply) => {
+    this.app.setErrorHandler((error: FastifyError, request, reply) => {
       if (error instanceof AppError) {
         logger.warn('Handled application error: %s', error.message)
         return reply.status(error.statusCode).send({ message: error.message })
@@ -100,7 +96,11 @@ export class Server {
       // Fastify 4xx errors (invalid JSON, unsupported media type, etc.)
       // are client errors — log as warn and return the original status code
       if (error.statusCode && error.statusCode < 500) {
-        logger.warn('Client error [%s]: %s', error.code ?? error.statusCode, error.message)
+        logger.warn(
+          'Client error [%s]: %s',
+          error.code ?? error.statusCode,
+          error.message
+        )
         return reply.status(error.statusCode).send({ message: error.message })
       }
 
@@ -119,7 +119,9 @@ export class Server {
       })
 
       logger.error('Unhandled error: %o', error)
-      return reply.status(error.statusCode ?? 500).send({ message: 'Internal server error' })
+      return reply
+        .status(error.statusCode ?? 500)
+        .send({ message: 'Internal server error' })
     })
   }
 

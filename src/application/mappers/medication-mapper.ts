@@ -28,7 +28,7 @@ export class MedicationMapper {
     }
   }
 
-  static toDomain(_dto: unknown): Medication {
+  static toDomain(): Medication {
     throw new Error('Not implemented')
   }
 }

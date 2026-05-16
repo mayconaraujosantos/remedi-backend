@@ -2,18 +2,19 @@ import 'reflect-metadata'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { MarkDoseAsTaken } from './MarkDoseAsTaken'
 import { DoseEvent } from '@/domain/entities/DoseEvent'
+import type { DoseEventRepository } from '@/domain/repositories/DoseEventRepository'
 import { AppError } from '@/shared/errors/AppError'
 import * as metrics from '@/shared/utils/metrics'
 
 describe('MarkDoseAsTaken', () => {
   let sut: MarkDoseAsTaken
-  let doseEventRepository: any
+  let doseEventRepository: DoseEventRepository
 
   beforeEach(() => {
     doseEventRepository = {
       findById: vi.fn(),
       update: vi.fn(),
-    }
+    } as unknown as DoseEventRepository
     sut = new MarkDoseAsTaken(doseEventRepository)
 
     // Spy on metrics

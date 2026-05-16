@@ -21,7 +21,7 @@ describe('GenerateDoseEvents', () => {
       update: vi.fn(),
       delete: vi.fn(),
       findAll: vi.fn(),
-    } as any
+    } as unknown as MedicationRepository
 
     // 2. Mocks (Verificação de interação)
     doseEventRepository = {
@@ -29,7 +29,7 @@ describe('GenerateDoseEvents', () => {
       findById: vi.fn(),
       update: vi.fn(),
       listByMedication: vi.fn(),
-    } as any
+    } as unknown as DoseEventRepository
 
     // 3. Spy/Mock (Verificação de chamadas complexas)
     queueProvider = {
@@ -87,7 +87,7 @@ describe('GenerateDoseEvents', () => {
 
   it('should not generate doses if medication is not found (Stub test)', async () => {
     // Mudando o comportamento do Stub para este teste
-    ;(medicationRepository.findById as any).mockResolvedValue(null)
+    vi.mocked(medicationRepository.findById).mockResolvedValue(null)
 
     const schedule = new MedicationSchedule({
       id: 'sched-1',
