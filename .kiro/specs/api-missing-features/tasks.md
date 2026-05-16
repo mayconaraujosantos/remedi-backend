@@ -6,16 +6,16 @@ Implement the missing features identified in the gap analysis between the curren
 
 ## Tasks
 
-- [-] 0. Refactor server into composition root + infrastructure modules
+- [x] 0. Refactor server into composition root + infrastructure modules
   - [x] 0.1 Create `src/infra/http/server/plugins/registerCors.ts` — extract `@fastify/cors` registration from `Server.ts`
   - [x] 0.2 Create `src/infra/http/server/plugins/registerSwagger.ts` — extract `@fastify/swagger` + `@fastify/swagger-ui` registration from `Server.ts`
   - [x] 0.3 Create `src/infra/http/server/plugins/registerZod.ts` — extract `setValidatorCompiler` / `setSerializerCompiler` calls from `Server.ts`
   - [x] 0.4 Create `src/infra/http/server/errors/setupErrorHandler.ts` — extract the `setErrorHandler` block from `Server.ts`; keep OTel span recording and `trackHttpServerError` calls intact
   - [x] 0.5 Create `src/infra/http/server/docs/exportSwaggerYaml.ts` — extract the `exportSwaggerConfig` method from `Server.ts`
   - [x] 0.6 Create `src/infra/http/server/lifecycle/setupGracefulShutdown.ts` — add `SIGTERM`/`SIGINT` handlers that call `app.close()` and `process.exit(0)`
-  - [-] 0.7 Create `src/infra/http/server/routes/registerRoutes.ts` — export a single `registerRoutes(app)` function that registers all existing route modules (`reminderRoutes`, `medicationRoutes`, `categoryRoutes`, `doseRoutes`) and will be the single place to add new routes going forward
-  - [-] 0.8 Create `src/infra/http/server/createServer.ts` — export `createServer(): FastifyInstance` that calls `registerZod`, `registerCors`, `registerSwagger`, `setupErrorHandler`, and `registerRoutes` in order; returns the configured app without starting it
-  - [ ] 0.9 Rewrite `src/main/server/Server.ts` so it only: imports `createServer`, calls `app.listen(...)`, calls `exportSwaggerYaml`, and calls `setupGracefulShutdown` — no plugin or route logic remains in this file
+  - [x] 0.7 Create `src/infra/http/server/routes/registerRoutes.ts` — export a single `registerRoutes(app)` function that registers all existing route modules (`reminderRoutes`, `medicationRoutes`, `categoryRoutes`, `doseRoutes`) and will be the single place to add new routes going forward
+  - [x] 0.8 Create `src/infra/http/server/createServer.ts` — export `createServer(): FastifyInstance` that calls `registerZod`, `registerCors`, `registerSwagger`, `setupErrorHandler`, and `registerRoutes` in order; returns the configured app without starting it
+  - [x] 0.9 Rewrite `src/main/server/Server.ts` so it only: imports `createServer`, calls `app.listen(...)`, calls `exportSwaggerYaml`, and calls `setupGracefulShutdown` — no plugin or route logic remains in this file
   - Verify the server starts and all existing routes (`/reminders`, `/medications`, `/categories`, `/medications/doses`) still respond correctly after the refactor
 
 - [ ] 1. Extend shared infrastructure and install new dependencies
