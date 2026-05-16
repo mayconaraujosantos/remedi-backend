@@ -35,7 +35,9 @@ export class UpdateMedication {
 
     await this.medicationRepository.update(updated)
 
-    const schedule = await this.scheduleRepository.findByMedicationId(updated.id)
+    const schedule = await this.scheduleRepository.findByMedicationId(
+      updated.id
+    )
     return MedicationMapper.toDTO(updated, schedule)
   }
 }
