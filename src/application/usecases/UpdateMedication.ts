@@ -1,18 +1,20 @@
 import { inject, injectable } from 'tsyringe'
 import { Medication } from '@/domain/entities/Medication'
 import type { MedicationRepository } from '@/domain/repositories/MedicationRepository'
+import type { MedicationScheduleRepository } from '@/domain/repositories/MedicationScheduleRepository'
 import { AppError } from '@/shared/errors/AppError'
 import type { UpdateMedicationDTO } from '@/application/dto/UpdateMedicationDTO'
 import type { MedicationResponseDTO } from '@/application/dto/MedicationResponseDTO'
 import { MedicationMapper } from '@/application/mappers/medication-mapper'
 import { Dosage } from '@/domain/value-objects/Dosage'
-import { TimeRange } from '@/domain/value-objects/TimeRange'
 
 @injectable()
 export class UpdateMedication {
   constructor(
     @inject('MedicationRepository')
-    private readonly medicationRepository: MedicationRepository
+    private readonly medicationRepository: MedicationRepository,
+    @inject('MedicationScheduleRepository')
+    private readonly scheduleRepository: MedicationScheduleRepository
   ) {}
 
   async execute(data: UpdateMedicationDTO): Promise<MedicationResponseDTO> {
@@ -32,6 +34,8 @@ export class UpdateMedication {
     })
 
     await this.medicationRepository.update(updated)
-    return MedicationMapper.toDTO(updated)
+
+    const schedule = await this.scheduleRepository.findByMedicationId(updated.id)
+    return MedicationMapper.toDTO(updated, schedule)
   }
 }

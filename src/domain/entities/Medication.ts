@@ -1,13 +1,4 @@
 import { Dosage } from '../value-objects/Dosage'
-import { TimeRange } from '../value-objects/TimeRange'
-
-export type MedicationFrequency =
-  | 'once'
-  | 'daily'
-  | 'twice_daily'
-  | 'every_other_day'
-  | 'weekly'
-  | 'custom'
 
 export interface MedicationProps {
   id?: string

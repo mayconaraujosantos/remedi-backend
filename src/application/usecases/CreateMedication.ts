@@ -44,6 +44,6 @@ export class CreateMedication {
     // Gerar doses iniciais
     await this.generateDoseEvents.execute(schedule)
 
-    return MedicationMapper.toDTO(medication)
+    return MedicationMapper.toDTO(medication, schedule)
   }
 }

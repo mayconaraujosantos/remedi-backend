@@ -1,26 +1,34 @@
 import { Medication } from '@/domain/entities/Medication'
+import { MedicationSchedule } from '@/domain/entities/MedicationSchedule'
 import type { MedicationResponseDTO } from '@/application/dto/MedicationResponseDTO'
 
 export class MedicationMapper {
-  static toDTO(domain: Medication): MedicationResponseDTO {
+  static toDTO(
+    domain: Medication,
+    schedule?: MedicationSchedule | null
+  ): MedicationResponseDTO {
     return {
       id: domain.id,
       name: domain.name,
       description: domain.description,
       dosage: domain.dosage.toString(),
-      frequency: domain.frequency,
-      startDate: domain.timeRange.startDate.toISOString(),
-      endDate: domain.timeRange.endDate?.toISOString(),
-      nextDoseAt: domain.nextDoseAt.toISOString(),
       categoryId: domain.categoryId,
       active: domain.active,
       createdAt: domain.createdAt.toISOString(),
+      schedule: schedule
+        ? {
+            type: schedule.type,
+            times: schedule.times,
+            intervalHours: schedule.intervalHours,
+            daysOfWeek: schedule.daysOfWeek,
+            startDate: schedule.startDate.toISOString(),
+            endDate: schedule.endDate?.toISOString(),
+          }
+        : undefined,
     }
   }
 
-  static toDomain(dto: any): Medication {
-    // Implementar se necessário converter de DTO para Domínio
-    // Geralmente o UseCase já recebe os dados e cria a entidade
+  static toDomain(_dto: unknown): Medication {
     throw new Error('Not implemented')
   }
 }
