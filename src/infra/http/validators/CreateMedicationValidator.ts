@@ -30,7 +30,7 @@ export const createMedicationSchema = z.object({
     ),
     intervalHours: z.number().int().positive().optional(),
     daysOfWeek: z.array(z.number().int().min(0).max(6)).optional(),
-    startDate: z.string().pipe(z.coerce.date()),
-    endDate: z.string().pipe(z.coerce.date()).optional(),
+    startDate: z.union([z.string(), z.date()]).pipe(z.coerce.date()),
+    endDate: z.union([z.string(), z.date()]).pipe(z.coerce.date()).optional(),
   }),
 })

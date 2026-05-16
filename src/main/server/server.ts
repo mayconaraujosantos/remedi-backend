@@ -97,6 +97,13 @@ export class Server {
         })
       }
 
+      // Fastify 4xx errors (invalid JSON, unsupported media type, etc.)
+      // are client errors — log as warn and return the original status code
+      if (error.statusCode && error.statusCode < 500) {
+        logger.warn('Client error [%s]: %s', error.code ?? error.statusCode, error.message)
+        return reply.status(error.statusCode).send({ message: error.message })
+      }
+
       const activeSpan = trace.getActiveSpan()
       activeSpan?.recordException(error)
       activeSpan?.setStatus({
@@ -107,12 +114,12 @@ export class Server {
       trackHttpServerError({
         method: request.method,
         route: request.routeOptions.url ?? request.url,
-        statusCode: 500,
+        statusCode: error.statusCode ?? 500,
         errorType: error.name ?? 'Error',
       })
 
       logger.error('Unhandled error: %o', error)
-      return reply.status(500).send({ message: 'Internal server error' })
+      return reply.status(error.statusCode ?? 500).send({ message: 'Internal server error' })
     })
   }
 
